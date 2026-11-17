@@ -1,0 +1,498 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  --bg-dark: #070708;
+  --bg-card: rgba(18, 18, 21, 0.85);
+  --gold-light: #fcd34d;
+  --gold-mid: #eab308;
+  --gold-dark: #b45309;
+  --gold-gradient: linear-gradient(135deg, #b45309 0%, #f59e0b 45%, #fde047 75%, #d97706 100%);
+  --gold-gradient-hover: linear-gradient(135deg, #d97706 0%, #fbbf24 50%, #fef08a 100%);
+  --border-gold: rgba(245, 158, 11, 0.25);
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background-color: var(--bg-dark);
+  background-image: 
+    radial-gradient(circle at 15% 15%, rgba(217, 119, 6, 0.12) 0%, transparent 45%),
+    radial-gradient(circle at 85% 85%, rgba(250, 204, 21, 0.08) 0%, transparent 45%);
+  color: var(--text-main);
+  min-height: 100vh;
+  padding: 25px 15px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+/* Animação suave de entrada */
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.container {
+  width: 100%;
+  max-width: 600px;
+  animation: fadeSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Container mais largo para a tabela do painel admin */
+.container:has(.card-tabela) {
+  max-width: 920px;
+}
+
+/* Cabeçalho da Logo (caso adicione no HTML) */
+.logo-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.logo-header img {
+  max-width: 240px;
+  height: auto;
+  filter: drop-shadow(0 4px 16px rgba(245, 158, 11, 0.2));
+  transition: transform 0.3s ease;
+}
+
+.logo-header img:hover {
+  transform: scale(1.03);
+}
+
+/* Cartões com efeito Glassmorphism Dark */
+.card {
+  background: var(--bg-card);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--border-gold);
+  border-radius: 18px;
+  padding: 32px 28px;
+  box-shadow: 
+    0 20px 40px -15px rgba(0, 0, 0, 0.85),
+    0 0 25px rgba(245, 158, 11, 0.06);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Filete dourado luminoso no topo do cartão */
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--gold-gradient);
+}
+
+h2, h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 22px;
+  background: var(--gold-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 0.5px;
+}
+
+/* Formulários e Inputs */
+.form-group {
+  margin-bottom: 18px;
+}
+
+label {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  margin-bottom: 7px;
+  letter-spacing: 0.3px;
+}
+
+input[type="text"],
+input[type="tel"],
+input[type="date"],
+input[type="password"],
+select {
+  width: 100%;
+  padding: 12px 15px;
+  background-color: rgba(10, 10, 12, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 0.95rem;
+  transition: all 0.25s ease;
+  color-scheme: dark;
+}
+
+input::placeholder {
+  color: #52525b;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: var(--gold-mid);
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18);
+  background-color: #0e0e11;
+}
+
+/* Grade de Horários */
+.grade-horarios {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+  gap: 10px;
+  margin-top: 8px;
+  margin-bottom: 22px;
+}
+
+.btn-horario {
+  padding: 11px 8px;
+  background: rgba(24, 24, 28, 0.9);
+  border: 1px solid var(--border-gold);
+  border-radius: 10px;
+  color: var(--gold-light);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-horario:hover:not(:disabled) {
+  transform: translateY(-2px);
+  border-color: var(--gold-light);
+  background: rgba(245, 158, 11, 0.12);
+  box-shadow: 0 6px 15px rgba(245, 158, 11, 0.15);
+}
+
+.btn-horario.selecionado {
+  background: var(--gold-gradient);
+  color: #09090b;
+  font-weight: 700;
+  border-color: transparent;
+  transform: scale(1.04);
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.35);
+}
+
+.btn-horario:disabled {
+  background: rgba(15, 15, 18, 0.5);
+  border-color: rgba(255, 255, 255, 0.05);
+  color: #3f3f46;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
+/* Botão Principal Dourado com Efeito Brilho */
+.btn-confirmar,
+button[type="submit"] {
+  width: 100%;
+  padding: 15px 20px;
+  margin-top: 8px;
+  background: var(--gold-gradient);
+  background-size: 200% 200%;
+  animation: shimmer 4s ease infinite;
+  color: #09090b;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 25px rgba(217, 119, 6, 0.35);
+}
+
+.btn-confirmar:hover:not(:disabled),
+button[type="submit"]:hover:not(:disabled) {
+  background: var(--gold-gradient-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(245, 158, 11, 0.5);
+}
+
+.btn-confirmar:active:not(:disabled),
+button[type="submit"]:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-confirmar:disabled,
+button[type="submit"]:disabled {
+  background: #27272a;
+  color: #52525b;
+  animation: none;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* Mensagens de Feedback */
+.mensagem {
+  padding: 13px 16px;
+  border-radius: 10px;
+  margin-bottom: 18px;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  animation: fadeSlideUp 0.3s ease;
+}
+
+.mensagem.sucesso {
+  background: rgba(20, 83, 45, 0.35);
+  border: 1px solid rgba(34, 197, 94, 0.45);
+  color: #86efac;
+}
+
+.mensagem.erro {
+  background: rgba(127, 29, 29, 0.35);
+  border: 1px solid rgba(239, 68, 68, 0.45);
+  color: #fca5a5;
+}
+
+/* Tabela do Painel Administrativo */
+.filtro-data {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.filtro-data input[type="date"] {
+  max-width: 220px;
+}
+
+.tabela-container {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(12, 12, 14, 0.7);
+}
+
+th {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--gold-light);
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 14px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-gold);
+}
+
+td {
+  padding: 13px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 0.92rem;
+  color: #e2e8f0;
+}
+
+tr {
+  transition: background-color 0.2s ease;
+}
+
+tr:hover {
+  background-color: rgba(245, 158, 11, 0.04);
+}
+
+/* Badges de Status */
+.status-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.status-CONFIRMADO,
+.status-AGENDADO {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--gold-light);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+.status-CANCELADO {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+}
+
+/* Botão Cancelar */
+.btn-cancelar {
+  background: rgba(220, 38, 38, 0.18) !important;
+  color: #fca5a5 !important;
+  border: 1px solid rgba(220, 38, 38, 0.45) !important;
+  padding: 7px 14px !important;
+  border-radius: 8px !important;
+  font-weight: 600;
+  transition: all 0.25s ease;
+}
+
+.btn-cancelar:hover:not(:disabled) {
+  background: #dc2626 !important;
+  color: #ffffff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35);
+}
+
+/* Links */
+a {
+  color: var(--gold-light) !important;
+  transition: opacity 0.2s ease;
+}
+
+a:hover {
+  opacity: 0.8;
+}
+
+/* Responsividade Mobile */
+@media (max-width: 480px) {
+  .card {
+    padding: 24px 18px;
+  }
+  h2 {
+    font-size: 1.75rem;
+  }
+}
+
+/* Modal de Confirmação */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 9999;
+}
+
+.modal-card {
+  max-width: 420px;
+  width: 100%;
+  animation: surgirModal 0.2s ease-out;
+}
+
+@keyframes surgirModal {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.btn-secundario-modal {
+  width: 100%;
+  padding: 14px;
+  background: transparent;
+  color: #cbd5e1;
+  border: 1px solid #475569;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-secundario-modal:hover {
+  border-color: #ef4444;
+  color: #fca5a5;
+  background: rgba(239, 68, 68, 0.08);
+}
+
+/* Rodapé (Footer) */
+.footer-estudio {
+  text-align: center;
+  padding: 24px 16px 32px;
+  margin-top: 30px;
+  border-top: 1px solid rgba(212, 175, 55, 0.15);
+  color: #94a3b8;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.footer-estudio strong {
+  color: #f8fafc;
+}
+
+.creditos-dev {
+  margin-top: 4px;
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.creditos-dev a {
+  color: #d4af37;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.creditos-dev a:hover {
+  color: #fcd34d;
+  text-decoration: underline;
+}
+
+/* Botão e Status Concluído */
+.btn-concluir {
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-concluir:hover {
+  background-color: #10b981;
+  color: #09090b;
+}
+
+.status-CONCLUIDO {
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}

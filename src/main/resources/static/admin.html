@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Administrativo - Agenda</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Tela de Login -->
+  <div class="container" id="telaLogin">
+    <div class="card" style="max-width: 400px; margin: 40px auto;">
+      <h2 style="text-align: center;">Acesso Restrito</h2>
+      <form id="formLogin">
+        <div class="form-group">
+          <label for="senhaInput">Senha da Profissional:</label>
+          <input type="password" id="senhaInput" placeholder="Digite a senha..." required>
+        </div>
+        <button type="submit" class="btn-confirmar" style="width: 100%; margin-top: 10px;">Entrar</button>
+        <p id="erroLogin" style="display: none; color: #f87171; background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.3); padding: 10px; border-radius: 8px; font-size: 0.85rem; text-align: center; margin-top: 12px;"></p>
+      </form>
+      <div style="margin-top: 15px; text-align: center;">
+        <a href="index.html" style="font-size: 0.9em; text-decoration: none;">← Voltar para agendamentos</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Painel Principal -->
+  <div class="container" id="painelAdmin" style="display: none;">
+
+    <!-- NOVO CARD: Controle de Horários e Folgas -->
+    <div class="card" style="margin-bottom: 25px;">
+      <h2 style="margin-bottom: 15px;">Gerenciar Horários e Folgas</h2>
+      <div id="mensagemDispBox" class="mensagem" style="display: none;"></div>
+
+      <div class="form-group">
+        <label for="dataConfig">Selecione a Data para Configurar:</label>
+        <input type="date" id="dataConfig">
+      </div>
+
+      <div class="form-group" style="display: flex; align-items: center; gap: 10px; margin: 15px 0;">
+        <input type="checkbox" id="checkDiaFechado" style="width: 18px; height: 18px; accent-color: #f59e0b; cursor: pointer;">
+        <label for="checkDiaFechado" style="margin: 0; cursor: pointer; color: #fca5a5;">
+          Fechar o dia inteiro (Folga / Indisponível)
+        </label>
+      </div>
+
+      <div id="areaHorariosConfig">
+        <label>Clique nos horários que estarão abertos neste dia:</label>
+        <div class="grade-horarios" id="gradeHorariosAdmin"></div>
+      </div>
+
+      <button type="button" id="btnSalvarDisp" class="btn-confirmar" style="margin-top: 10px;">
+        Salvar Disponibilidade do Dia
+      </button>
+    </div>
+
+    <div class="card card-tabela">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+        <h2 style="margin: 0;">Agenda Completa</h2>
+        <a href="index.html" style="font-size: 0.9em; text-decoration: none;">Página de clientes →</a>
+      </div>
+
+      <div id="mensagemBox" class="mensagem" style="display: none;"></div>
+
+      <!-- Container onde os dias serão gerados automaticamente -->
+      <div id="agendaAgrupada">
+        <p style="text-align: center; color: #94a3b8;">Carregando agenda...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Confirmação de Cancelamento (Admin) -->
+  <div id="modalCancelAdmin" class="modal-overlay" style="display: none;">
+    <div class="card modal-card">
+      <h2 style="font-size: 1.6rem; margin-bottom: 10px;">Cancelar Horário?</h2>
+      <p id="textoModalCancelAdmin" style="color: #cbd5e1; font-size: 0.92rem; text-align: center; margin-bottom: 20px; line-height: 1.6;"></p>
+
+      <div style="display: flex; gap: 12px;">
+        <button type="button" id="btnVoltarCancelAdmin" class="btn-secundario-modal">
+          Voltar
+        </button>
+        <button type="button" id="btnConfirmarCancelAdmin" class="btn-cancelar" style="width: 100%; padding: 14px; font-size: 0.95rem; border-radius: 10px;">
+          Sim, Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Confirmação de Conclusão (Admin) -->
+  <div id="modalConcluirAdmin" class="modal-overlay" style="display: none;">
+    <div class="card modal-card">
+      <h2 style="font-size: 1.6rem; margin-bottom: 10px;">Concluir Atendimento?</h2>
+      <p id="textoModalConcluirAdmin" style="color: #cbd5e1; font-size: 0.92rem; text-align: center; margin-bottom: 20px; line-height: 1.6;"></p>
+
+      <div style="display: flex; gap: 12px;">
+        <button type="button" id="btnVoltarConcluirAdmin" class="btn-secundario-modal">
+          Voltar
+        </button>
+        <button type="button" id="btnConfirmarConcluirAdmin" class="btn-concluir" style="width: 100%; padding: 14px; font-size: 0.95rem; border-radius: 10px;">
+          Sim, Concluir
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>
