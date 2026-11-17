@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8080";
+const API_URL = "https://sistema-agendamento-studio.onrender.com";
 let senhaAdminAtual = localStorage.getItem("adminPassword") || "";
 
 function getHeadersAdmin() {
