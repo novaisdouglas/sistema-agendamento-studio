@@ -170,7 +170,7 @@ async function salvarConfiguracaoDoDia() {
       body: JSON.stringify(payload)
 });
 
-    if (res.ok) {
+    if (response.ok) {
       exibirMensagem(mensagemDispBox, "Disponibilidade salva com sucesso!", "sucesso");
     } else {
       exibirMensagem(mensagemDispBox, "Erro ao salvar disponibilidade.", "erro");

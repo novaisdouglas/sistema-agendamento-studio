@@ -10,6 +10,11 @@ const dataAgendamento = document.getElementById("dataAgendamento");
 const gradeHorarios = document.getElementById("gradeHorarios");
 const horarioSelecionado = document.getElementById("horarioSelecionado");
 const btnConfirmar = document.getElementById("btnConfirmar");
+const hoje = new Date();
+const ano = hoje.getFullYear();
+const mes = String(hoje.getMonth() + 1).padStart(2, "0");
+const dia = String(hoje.getDate()).padStart(2, "0");
+dataAgendamento.min = `${ano}-${mes}-${dia}`;
 
 function formatarDataBrasil(dataIso) {
   if (!dataIso) return "";
@@ -93,7 +98,7 @@ async function renderizarGradeHorarios(dataString) {
     const configDia = await resDisp.json();
 
     if (configDia.diaFechado || !configDia.horarios || configDia.horarios.length === 0) {
-      gradeHorarios.innerHTML = '<p style="color: #fca5a5; font-size: 0.9em; grid-column: 1/-1;">Não há atendimento disponível nesta data.</p>';
+      gradeHorarios.innerHTML = '<p style="color: #fca5a5; font-size: 0.9em; grid-column: 1/-1; text-align: center;">Não há atendimento disponível nesta data.</p>';
       return;
     }
 
