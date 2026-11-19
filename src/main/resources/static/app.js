@@ -15,6 +15,15 @@ const ano = hoje.getFullYear();
 const mes = String(hoje.getMonth() + 1).padStart(2, "0");
 const dia = String(hoje.getDate()).padStart(2, "0");
 dataAgendamento.min = `${ano}-${mes}-${dia}`;
+const hojeISO = `${ano}-${mes}-${dia}`;
+dataAgendamento.min = hojeISO;
+
+dataAgendamento.addEventListener("change", () => {
+  if (dataAgendamento.value && dataAgendamento.value < hojeISO) {
+    exibirMensagem("Não é possível selecionar uma data que já passou.", "erro");
+    dataAgendamento.value = hojeISO;
+  }
+});
 
 function formatarDataBrasil(dataIso) {
   if (!dataIso) return "";
@@ -175,14 +184,23 @@ form.addEventListener("submit", (e) => {
     return;
   }
 
-    const apenasNumerosTelefone = telefone.replace(/\D/g, "");
-  if (apenasNumerosTelefone.length < 10) {
+    const whatsappValido =
+    /^[1-9][0-9]9\d{8}$/.test(telefone) &&
+    !/^(\d)\1{10}$/.test(telefone) &&
+    !/^(\d)\1{7}$/.test(telefone.slice(3));
+
+  if (!whatsappValido) {
     exibirMensagem("Por favor, digite um WhatsApp válido com DDD (ex: 44999998888).", "erro");
     return;
   }
 
   if (!servicoId || !data || !hora) {
     exibirMensagem("Por favor, preencha todos os campos e escolha um horário.", "erro");
+    return;
+  }
+
+  if (data < hojeISO) {
+    exibirMensagem("Por favor, escolha uma data a partir de hoje.", "erro");
     return;
   }
 

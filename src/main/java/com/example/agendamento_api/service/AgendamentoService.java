@@ -1,5 +1,6 @@
 package com.example.agendamento_api.service;
 
+import java.time.ZoneId;
 import com.example.agendamento_api.domain.model.Agendamento;
 import com.example.agendamento_api.domain.model.Servico;
 import com.example.agendamento_api.domain.model.StatusAgendamento;
@@ -22,11 +23,20 @@ public class AgendamentoService {
     }
 
     public Agendamento criarAgendamento(AgendamentoRequestDTO dto) {
-        Servico servico = servicoRepository.findById(dto.servicoId())
-                .orElseThrow(() -> new RuntimeException("Serviço não encontrado"));
 
+            String telefone = dto.telefoneCliente() != null ? dto.telefoneCliente().trim() : "";
+        if (!telefone.matches("^[1-9][0-9]9\\d{8}$") || telefone.substring(3).matches("^(\\d)\\1{7}$")) {
+            throw new RuntimeException("Por favor, informe um número de celular com DDD válido (11 dígitos, começando com 9).");
+}
+        Servico servico = servicoRepository.findById(dto.servicoId())
+                .orElseThrow(() -> new RuntimeException("Serviço não encontrado"));   
+                
         LocalDateTime inicio = dto.dataHoraInicio();
         LocalDateTime fim = inicio.plusMinutes(30); // Supondo que cada serviço tenha duração de 30 minutos
+
+        if (inicio.isBefore(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")))) {
+            throw new RuntimeException("Não é possível agendar em uma data ou horário que já passou.");
+        }        
 
         if (agendamentoRepository.existeConflitoDeHorario(inicio, fim, StatusAgendamento.CANCELADO)) {
             throw new RuntimeException("Horário indisponível. Já existe um agendamento nesse intervalo.");
