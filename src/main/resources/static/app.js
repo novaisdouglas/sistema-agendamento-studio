@@ -10,20 +10,13 @@ const dataAgendamento = document.getElementById("dataAgendamento");
 const gradeHorarios = document.getElementById("gradeHorarios");
 const horarioSelecionado = document.getElementById("horarioSelecionado");
 const btnConfirmar = document.getElementById("btnConfirmar");
+
 const hoje = new Date();
 const ano = hoje.getFullYear();
 const mes = String(hoje.getMonth() + 1).padStart(2, "0");
 const dia = String(hoje.getDate()).padStart(2, "0");
-dataAgendamento.min = `${ano}-${mes}-${dia}`;
 const hojeISO = `${ano}-${mes}-${dia}`;
 dataAgendamento.min = hojeISO;
-
-dataAgendamento.addEventListener("change", () => {
-  if (dataAgendamento.value && dataAgendamento.value < hojeISO) {
-    exibirMensagem("Não é possível selecionar uma data que já passou.", "erro");
-    dataAgendamento.value = hojeISO;
-  }
-});
 
 function formatarDataBrasil(dataIso) {
   if (!dataIso) return "";
@@ -92,8 +85,12 @@ async function carregarServicos() {
   }
 }
 
+let requisicaoGradeAtual = 0;
+
 // 2. Montar grade de horários
 async function renderizarGradeHorarios(dataString) {
+  const idRequisicao = ++requisicaoGradeAtual;
+
   gradeHorarios.innerHTML = "";
   horarioSelecionado.value = "";
   btnConfirmar.disabled = true;
@@ -103,6 +100,7 @@ async function renderizarGradeHorarios(dataString) {
   try {
     // 1. Consulta a configuração do dia (padrão ou personalizada pela profissional)
     const resDisp = await fetch(`${API_URL}/disponibilidade?data=${dataString}`);
+    if (idRequisicao !== requisicaoGradeAtual) return;
     if (!resDisp.ok) throw new Error("Erro ao consultar disponibilidade.");
     const configDia = await resDisp.json();
 
@@ -113,13 +111,19 @@ async function renderizarGradeHorarios(dataString) {
 
     // 2. Busca os agendamentos já marcados naquele dia para bloquear os ocupados
     const res = await fetch(`${API_URL}/agendamentos?data=${dataString}`);
+    if (idRequisicao !== requisicaoGradeAtual) return;
     if (!res.ok) throw new Error(await obterMensagemErro(res));
     const agendados = await res.json();
     const horariosOcupados = agendados.map((a) => extrairHorario(a.dataHoraInicio));
 
     const agora = new Date();
+    const horariosJaAdicionados = new Set();
+    gradeHorarios.innerHTML = "";
 
     configDia.horarios.forEach((hora) => {
+      if (horariosJaAdicionados.has(hora)) return;
+      horariosJaAdicionados.add(hora);
+
       const dataHoraSlot = new Date(`${dataString}T${hora}:00`);
 
       // Se o horário já passou, nem cria o botão na grade
@@ -150,6 +154,7 @@ async function renderizarGradeHorarios(dataString) {
       gradeHorarios.innerHTML = '<p style="color: #94a3b8; font-size: 0.9rem; grid-column: 1 / -1; text-align: center;">Não há mais horários disponíveis para hoje. Escolha outra data.</p>';
     }
   } catch (e) {
+    if (idRequisicao !== requisicaoGradeAtual) return;
     gradeHorarios.innerHTML = '<p style="color: #dc2626; grid-column: 1/-1;">Erro ao consultar horários disponíveis.</p>';
   }
 }
@@ -174,17 +179,17 @@ form.addEventListener("submit", (e) => {
   const hora = horarioSelecionado.value;
 
   if (nome.length < 4) {
-      exibirMensagem("Por favor, digite seu nome completo (mínimo 4 letras).", "erro");
-      return;
-    }
+    exibirMensagem("Por favor, digite seu nome completo (mínimo 4 letras).", "erro");
+    return;
+  }
 
-    const apenasLetras = /^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/;
+  const apenasLetras = /^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/;
   if (!apenasLetras.test(nome)) {
     exibirMensagem("O nome deve conter apenas letras.", "erro");
     return;
   }
 
-    const whatsappValido =
+  const whatsappValido =
     /^[1-9][0-9]9\d{8}$/.test(telefone) &&
     !/^(\d)\1{10}$/.test(telefone) &&
     !/^(\d)\1{7}$/.test(telefone.slice(3));
@@ -274,6 +279,7 @@ btnConfirmarModal.addEventListener("click", async () => {
       `• *Valor:* R$ ${Number(agendamentoCriado.precoServico).toFixed(2).replace(".", ",")}\n\n` +
       `• *Link para gerenciar ou cancelar seu horário:*\n\n${linkGerenciamento}\n\n` +
       `Poderia confirmar, por favor?`;
+
     form.reset();
     gradeHorarios.innerHTML = '<p style="color: #94a3b8; font-size: 0.9em; grid-column: 1 / -1;">Selecione uma data acima para ver os horários.</p>';
     btnConfirmar.disabled = true;
@@ -293,6 +299,12 @@ btnConfirmarModal.addEventListener("click", async () => {
 });
 
 dataAgendamento.addEventListener("change", () => {
+  if (dataAgendamento.value && dataAgendamento.value < hojeISO) {
+    exibirMensagem("Não é possível selecionar uma data que já passou.", "erro");
+    dataAgendamento.value = hojeISO;
+  } else {
+    esconderMensagem();
+  }
   renderizarGradeHorarios(dataAgendamento.value);
 });
 
