@@ -142,8 +142,11 @@ input[type="date"],
 input[type="password"],
 select {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   padding: 12px 15px;
-  background-color: rgba(10, 10, 12, 0.9);
+  background-color: rgba(18, 18, 22, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 10px;
   color: var(--text-main);
@@ -151,6 +154,11 @@ select {
   font-size: 0.95rem;
   transition: all 0.25s ease;
   color-scheme: dark;
+}
+
+input[type="date"] {
+  display: block;
+  text-align: left;
 }
 
 input::placeholder {
