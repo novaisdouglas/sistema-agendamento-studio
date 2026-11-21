@@ -516,3 +516,70 @@ a:hover {
   color: #34d399;
   border: 1px solid rgba(16, 185, 129, 0.3);
 }
+/* Lista interativa de múltiplos serviços */
+.lista-servicos-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 260px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.servico-item-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 0;
+}
+
+.servico-item-card:hover {
+  border-color: rgba(212, 175, 55, 0.5);
+  background: rgba(212, 175, 55, 0.06);
+}
+
+.servico-item-card.selecionado {
+  border-color: #d4af37;
+  background: rgba(212, 175, 55, 0.14);
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.15);
+}
+
+.servico-item-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.servico-item-info input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #d4af37;
+  cursor: pointer;
+  margin: 0;
+}
+
+.servico-item-nome {
+  display: block;
+  color: #f8fafc;
+  font-size: 0.93rem;
+  font-weight: 500;
+}
+
+.servico-item-duracao {
+  display: block;
+  color: #94a3b8;
+  font-size: 0.78rem;
+}
+
+.servico-item-preco {
+  color: #fcd34d;
+  font-weight: 600;
+  font-size: 0.92rem;
+  white-space: nowrap;
+}

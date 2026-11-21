@@ -22,12 +22,16 @@ public class Servico {
     @Column(nullable = false)
     private BigDecimal preco;
 
+    @Column(name = "duracao_minutos", nullable = false, columnDefinition = "integer default 30")
+    private Integer duracaoMinutos = 30;
+
     public Servico() {
     }
 
-    public Servico(String nome, BigDecimal preco) {
+    public Servico(String nome, BigDecimal preco, Integer duracaoMinutos) {
         this.nome = nome;
         this.preco = preco;
+        this.duracaoMinutos = (duracaoMinutos != null) ? duracaoMinutos : 30;
     }
 
     public Long getId() {
@@ -48,5 +52,13 @@ public class Servico {
 
     public void setPreco(BigDecimal preco) {
         this.preco = preco;
+    }
+
+    public Integer getDuracaoMinutos() {
+        return duracaoMinutos != null ? duracaoMinutos : 30;
+    }
+
+    public void setDuracaoMinutos(Integer duracaoMinutos) {
+        this.duracaoMinutos = duracaoMinutos;
     }
 }

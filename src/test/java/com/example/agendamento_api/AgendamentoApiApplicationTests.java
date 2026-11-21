@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -48,7 +49,7 @@ class AgendamentoApiApplicationTests {
 		assertNotNull(criado.getId());
 		assertEquals("Maria Silva", criado.getNomeCliente());
 		assertEquals(pedido.dataHoraInicio(), criado.getDataHoraInicio());
-		assertEquals(pedido.dataHoraInicio().plusHours(1), criado.getDataHoraFim());
+		assertEquals(pedido.dataHoraInicio().plusMinutes(30), criado.getDataHoraFim());
 		assertEquals(1, agendamentoRepository.count());
 	}
 
@@ -64,6 +65,6 @@ class AgendamentoApiApplicationTests {
 
 	private AgendamentoRequestDTO novoPedido(Long servicoId) {
 		var inicio = LocalDateTime.now().plusDays(1).withHour(14).withMinute(0).withSecond(0).withNano(0);
-		return new AgendamentoRequestDTO("Maria Silva", "44999998888", servicoId, inicio);
+		return new AgendamentoRequestDTO("Maria Silva", "44999998888", null, List.of(servicoId), inicio);
 	}
 }

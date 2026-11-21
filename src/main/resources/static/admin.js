@@ -1,4 +1,4 @@
-const API_URL = "https://sistema-agendamento-studio.onrender.com";
+const API_URL = "https://sistema-agendamento-studio.onrender.com/";
 let senhaAdminAtual = localStorage.getItem("adminPassword") || "";
 
 function getHeadersAdmin() {
@@ -258,20 +258,28 @@ function formatarTituloDia(dataChave) {
 
       let linhasTabela = "";
       listaDoDia.forEach((ag) => {
-        const horario = extrairHorario(ag.dataHoraInicio);
+        const horaInicio = extrairHorario(ag.dataHoraInicio);
+        const horaFim = ag.dataHoraFim ? extrairHorario(ag.dataHoraFim) : "";
+        const horarioExibicao = horaFim ? `${horaInicio} - ${horaFim}` : horaInicio;
         const telefoneLimpo = ag.telefoneCliente.replace(/\D/g, "");
+        const valorFormatado = ag.precoServico != null
+          ? `R$ ${Number(ag.precoServico).toFixed(2).replace(".", ",")}`
+          : "";
 
         linhasTabela += `
           <tr>
             <td><strong style="color: #94a3b8;">#${ag.id}</strong></td>
-            <td><strong style="color: #fcd34d;">${horario}</strong></td>
+            <td style="white-space: nowrap;"><strong style="color: #fcd34d;">${horarioExibicao}</strong></td>
             <td><strong>${ag.nomeCliente}</strong></td>
             <td>
               <a href="https://wa.me/55${telefoneLimpo}" target="_blank" style="text-decoration: none; font-weight: bold;">
                 ${ag.telefoneCliente}
               </a>
             </td>
-            <td>${ag.nomeServico}</td>
+            <td>
+              <div>${ag.nomeServico}</div>
+              ${valorFormatado ? `<small style="color: #94a3b8;">${valorFormatado}</small>` : ""}
+            </td>
             <td><span class="status-badge status-${ag.status}">${ag.status}</span></td>
             <td>
               ${ag.status === "CONFIRMADO" ? `

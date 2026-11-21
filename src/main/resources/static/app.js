@@ -1,15 +1,22 @@
-const API_URL = "https://sistema-agendamento-studio.onrender.com";
+const API_URL = "https://sistema-agendamento-studio.onrender.com/";
 const WHATSAPP_PROFISSIONAL = "5544998375875";
 
 const GRADE_EXPEDIENTE = ["14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00"];
 
-const servicoSelect = document.getElementById("servicoSelect");
+const listaServicosContainer = document.getElementById("listaServicosContainer");
+const resumoServicosBox = document.getElementById("resumoServicosBox");
+const resumoQtdTempo = document.getElementById("resumoQtdTempo");
+const resumoValorTotal = document.getElementById("resumoValorTotal");
+
 const form = document.getElementById("formAgendamento");
 const mensagemBox = document.getElementById("mensagemBox");
 const dataAgendamento = document.getElementById("dataAgendamento");
 const gradeHorarios = document.getElementById("gradeHorarios");
 const horarioSelecionado = document.getElementById("horarioSelecionado");
 const btnConfirmar = document.getElementById("btnConfirmar");
+
+let catalogoServicos = [];
+let servicosSelecionadosIds = [];
 
 const hoje = new Date();
 const ano = hoje.getFullYear();
@@ -18,20 +25,6 @@ const dia = String(hoje.getDate()).padStart(2, "0");
 const hojeISO = `${ano}-${mes}-${dia}`;
 dataAgendamento.min = hojeISO;
 
-function formatarDataBrasil(dataIso) {
-  if (!dataIso) return "";
-  const dataObj = new Date(dataIso);
-  return dataObj
-    .toLocaleString("pt-BR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    })
-    .replace(",", " às");
-}
-
 function extrairHorario(dataIso) {
   if (!dataIso) return "";
   const dataObj = new Date(dataIso);
@@ -39,6 +32,14 @@ function extrairHorario(dataIso) {
     hour: "2-digit",
     minute: "2-digit",
   });
+}
+
+function somarMinutosHorario(horaStr, minutosParaSomar) {
+  const [h, m] = horaStr.split(":").map(Number);
+  const totalMin = h * 60 + m + minutosParaSomar;
+  const novaHora = String(Math.floor(totalMin / 60)).padStart(2, "0");
+  const novoMin = String(totalMin % 60).padStart(2, "0");
+  return `${novaHora}:${novoMin}`;
 }
 
 function exibirMensagem(texto, tipo) {
@@ -66,28 +67,109 @@ async function obterMensagemErro(response) {
   return corpo;
 }
 
+function obterServicosSelecionados() {
+  return servicosSelecionadosIds
+    .map((id) => catalogoServicos.find((s) => s.id === id))
+    .filter(Boolean);
+}
+
+function calcularBlocosNecessarios() {
+  const selecionados = obterServicosSelecionados();
+  if (selecionados.length === 0) return 1;
+  const duracaoTotal = selecionados.reduce((acc, s) => acc + (s.duracaoMinutos || 30), 0);
+  return Math.max(1, Math.ceil(duracaoTotal / 30));
+}
+
+function atualizarResumoServicos() {
+  const selecionados = obterServicosSelecionados();
+
+  if (selecionados.length === 0) {
+    resumoServicosBox.style.display = "none";
+    return;
+  }
+
+  const duracaoTotal = selecionados.reduce((acc, s) => acc + (s.duracaoMinutos || 30), 0);
+  const valorTotal = selecionados.reduce((acc, s) => acc + Number(s.preco || 0), 0);
+  const textoQtd = selecionados.length === 1 ? "1 serviço" : `${selecionados.length} serviços`;
+
+  resumoQtdTempo.textContent = `${textoQtd} • ${duracaoTotal} min`;
+  resumoValorTotal.textContent = `R$ ${valorTotal.toFixed(2).replace(".", ",")}`;
+  resumoServicosBox.style.display = "flex";
+}
+
+function renderizarListaServicos() {
+  listaServicosContainer.innerHTML = "";
+
+  catalogoServicos.forEach((s) => {
+    const selecionado = servicosSelecionadosIds.includes(s.id);
+    const duracao = s.duracaoMinutos || 30;
+
+    const item = document.createElement("label");
+    item.className = `servico-item-card ${selecionado ? "selecionado" : ""}`;
+
+    item.innerHTML = `
+      <div class="servico-item-info">
+        <input type="checkbox" value="${s.id}" ${selecionado ? "checked" : ""}>
+        <div>
+          <span class="servico-item-nome">${s.nome}</span>
+          <small class="servico-item-duracao">${duracao} min</small>
+        </div>
+      </div>
+      <span class="servico-item-preco">R$ ${Number(s.preco).toFixed(2).replace(".", ",")}</span>
+    `;
+
+    const checkbox = item.querySelector("input");
+    checkbox.addEventListener("change", () => {
+      if (checkbox.checked) {
+        if (servicosSelecionadosIds.length >= 3) {
+          checkbox.checked = false;
+          exibirMensagem("Você pode selecionar no máximo 3 serviços por sessão.", "erro");
+          return;
+        }
+
+        const duracaoAtual = obterServicosSelecionados().reduce((acc, item) => acc + (item.duracaoMinutos || 30), 0);
+        if (duracaoAtual + duracao > 120) {
+          checkbox.checked = false;
+          exibirMensagem("A soma dos serviços não pode ultrapassar 2 horas (120 min) por sessão.", "erro");
+          return;
+        }
+
+        esconderMensagem();
+        servicosSelecionadosIds.push(s.id);
+      } else {
+        esconderMensagem();
+        servicosSelecionadosIds = servicosSelecionadosIds.filter((id) => id !== s.id);
+      }
+
+      renderizarListaServicos();
+      atualizarResumoServicos();
+
+      // Se já houver uma data escolhida, atualiza os horários disponíveis para a nova duração
+      if (dataAgendamento.value) {
+        renderizarGradeHorarios(dataAgendamento.value);
+      }
+    });
+
+    listaServicosContainer.appendChild(item);
+  });
+}
+
 // 1. Carregar serviços
 async function carregarServicos() {
   try {
     const response = await fetch(`${API_URL}/servicos`);
     if (!response.ok) throw new Error("Falha ao carregar serviços");
-    const servicos = await response.json();
-
-    servicoSelect.innerHTML = '<option value="">Selecione um serviço...</option>';
-    servicos.forEach((s) => {
-      const option = document.createElement("option");
-      option.value = s.id;
-      option.textContent = `${s.nome} - R$ ${s.preco.toFixed(2).replace(".", ",")}`;
-      servicoSelect.appendChild(option);
-    });
+    catalogoServicos = await response.json();
+    renderizarListaServicos();
   } catch (err) {
+    listaServicosContainer.innerHTML = '<p style="color: #fca5a5; text-align: center;">Não foi possível carregar os serviços.</p>';
     exibirMensagem("Não foi possível carregar os serviços.", "erro");
   }
 }
 
 let requisicaoGradeAtual = 0;
 
-// 2. Montar grade de horários
+// 2. Montar grade de horários considerando múltiplos blocos consecutivos
 async function renderizarGradeHorarios(dataString) {
   const idRequisicao = ++requisicaoGradeAtual;
 
@@ -109,13 +191,26 @@ async function renderizarGradeHorarios(dataString) {
       return;
     }
 
-    // 2. Busca os agendamentos já marcados naquele dia para bloquear os ocupados
+    // 2. Busca os agendamentos já marcados naquele dia e mapeia TODOS os slots de 30min ocupados
     const res = await fetch(`${API_URL}/agendamentos?data=${dataString}`);
     if (idRequisicao !== requisicaoGradeAtual) return;
     if (!res.ok) throw new Error(await obterMensagemErro(res));
     const agendados = await res.json();
-    const horariosOcupados = agendados.map((a) => extrairHorario(a.dataHoraInicio));
 
+    const slotsOcupadosSet = new Set();
+    agendados.forEach((a) => {
+      let cursor = new Date(a.dataHoraInicio);
+      const fim = new Date(a.dataHoraFim);
+      while (cursor < fim) {
+        const hh = String(cursor.getHours()).padStart(2, "0");
+        const mm = String(cursor.getMinutes()).padStart(2, "0");
+        slotsOcupadosSet.add(`${hh}:${mm}`);
+        cursor = new Date(cursor.getTime() + 30 * 60000);
+      }
+    });
+
+    const horariosAbertosSet = new Set(configDia.horarios);
+    const blocosNecessarios = calcularBlocosNecessarios();
     const agora = new Date();
     const horariosJaAdicionados = new Set();
     gradeHorarios.innerHTML = "";
@@ -126,9 +221,19 @@ async function renderizarGradeHorarios(dataString) {
 
       const dataHoraSlot = new Date(`${dataString}T${hora}:00`);
 
-      // Se o horário já passou, nem cria o botão na grade
+      // Se o horário já passou, não exibe
       if (dataHoraSlot <= agora) {
         return;
+      }
+
+      // Verifica se todos os N blocos consecutivos necessários estão abertos E livres
+      let cabeNaGrade = true;
+      for (let i = 0; i < blocosNecessarios; i++) {
+        const slotVerificar = somarMinutosHorario(hora, i * 30);
+        if (!horariosAbertosSet.has(slotVerificar) || slotsOcupadosSet.has(slotVerificar)) {
+          cabeNaGrade = false;
+          break;
+        }
       }
 
       const btn = document.createElement("button");
@@ -136,9 +241,9 @@ async function renderizarGradeHorarios(dataString) {
       btn.className = "btn-horario";
       btn.textContent = hora;
 
-      if (horariosOcupados.includes(hora)) {
+      if (!cabeNaGrade) {
         btn.disabled = true;
-        btn.title = "Horário indisponível";
+        btn.title = "Indisponível para a duração selecionada";
       } else {
         btn.addEventListener("click", () => {
           document.querySelectorAll(".btn-horario").forEach((b) => b.classList.remove("selecionado"));
@@ -173,8 +278,7 @@ form.addEventListener("submit", (e) => {
 
   const nome = document.getElementById("nomeCliente").value.trim();
   const telefone = document.getElementById("telefoneCliente").value.trim();
-  const servicoId = servicoSelect.value;
-  const servicoTexto = servicoSelect.options[servicoSelect.selectedIndex]?.text || "";
+  const selecionados = obterServicosSelecionados();
   const data = dataAgendamento.value;
   const hora = horarioSelecionado.value;
 
@@ -199,8 +303,13 @@ form.addEventListener("submit", (e) => {
     return;
   }
 
-  if (!servicoId || !data || !hora) {
-    exibirMensagem("Por favor, preencha todos os campos e escolha um horário.", "erro");
+  if (selecionados.length === 0) {
+    exibirMensagem("Por favor, selecione pelo menos um serviço.", "erro");
+    return;
+  }
+
+  if (!data || !hora) {
+    exibirMensagem("Por favor, escolha uma data e um horário disponível.", "erro");
     return;
   }
 
@@ -212,11 +321,17 @@ form.addEventListener("submit", (e) => {
   const [ano, mes, dia] = data.split("-");
   const dataFormatada = `${dia}/${mes}/${ano}`;
 
+  const nomesServicos = selecionados.map((s) => s.nome).join(" + ");
+  const duracaoTotal = selecionados.reduce((acc, s) => acc + (s.duracaoMinutos || 30), 0);
+  const valorTotal = selecionados.reduce((acc, s) => acc + Number(s.preco || 0), 0);
+  const valorFormatado = `R$ ${valorTotal.toFixed(2).replace(".", ",")}`;
+
   dadosPendentes = {
     nome,
     telefone,
-    servicoId: Number(servicoId),
-    servicoTexto,
+    servicosIds: selecionados.map((s) => s.id),
+    nomesServicos,
+    valorFormatado,
     data,
     dataFormatada,
     hora
@@ -225,7 +340,9 @@ form.addEventListener("submit", (e) => {
   resumoModal.innerHTML = `
     <div><strong style="color: #fcd34d;">Cliente:</strong> ${nome}</div>
     <div><strong style="color: #fcd34d;">WhatsApp:</strong> ${telefone}</div>
-    <div><strong style="color: #fcd34d;">Serviço:</strong> ${servicoTexto}</div>
+    <div><strong style="color: #fcd34d;">Serviços:</strong> ${nomesServicos}</div>
+    <div><strong style="color: #fcd34d;">Duração estimada:</strong> ${duracaoTotal} min</div>
+    <div><strong style="color: #fcd34d;">Valor Total:</strong> ${valorFormatado}</div>
     <div><strong style="color: #fcd34d;">Data e Hora:</strong> ${dataFormatada} às ${hora}</div>
   `;
 
@@ -242,7 +359,7 @@ btnCancelarModal.addEventListener("click", () => {
 btnConfirmarModal.addEventListener("click", async () => {
   if (!dadosPendentes) return;
 
-  const { nome, telefone, servicoId, servicoTexto, data, dataFormatada, hora } = dadosPendentes;
+  const { nome, telefone, servicosIds, data, dataFormatada, hora } = dadosPendentes;
   btnConfirmarModal.disabled = true;
   btnConfirmarModal.textContent = "Agendando...";
 
@@ -250,7 +367,7 @@ btnConfirmarModal.addEventListener("click", async () => {
     const payload = {
       nomeCliente: nome,
       telefoneCliente: telefone,
-      servicoId: servicoId,
+      servicosIds: servicosIds,
       dataHoraInicio: `${data}T${hora}:00`
     };
 
@@ -274,13 +391,16 @@ btnConfirmarModal.addEventListener("click", async () => {
     const mensagemWhatsApp =
       `Olá! Acabei de fazer um agendamento pelo site:\n\n` +
       `• *Cliente:* ${agendamentoCriado.nomeCliente}\n` +
-      `• *Serviço:* ${agendamentoCriado.nomeServico}\n` +
+      `• *Serviço(s):* ${agendamentoCriado.nomeServico}\n` +
       `• *Data/Horário:* ${dataFormatada} às ${hora}\n` +
-      `• *Valor:* R$ ${Number(agendamentoCriado.precoServico).toFixed(2).replace(".", ",")}\n\n` +
+      `• *Valor Total:* R$ ${Number(agendamentoCriado.precoServico).toFixed(2).replace(".", ",")}\n\n` +
       `• *Link para gerenciar ou cancelar seu horário:*\n\n${linkGerenciamento}\n\n` +
       `Poderia confirmar, por favor?`;
 
     form.reset();
+    servicosSelecionadosIds = [];
+    renderizarListaServicos();
+    atualizarResumoServicos();
     gradeHorarios.innerHTML = '<p style="color: #94a3b8; font-size: 0.9em; grid-column: 1 / -1;">Selecione uma data acima para ver os horários.</p>';
     btnConfirmar.disabled = true;
 

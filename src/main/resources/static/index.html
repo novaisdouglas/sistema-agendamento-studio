@@ -15,7 +15,7 @@
   gtag('config', 'G-EHPWLRGBZM');
   </script>
 
-  <link rel="stylesheet" href="style.css?v=7"> <!-- Sempre que o arquivo for atualizado, aumentar o número após o ?v= -->
+  <link rel="stylesheet" href="style.css?v=8"> <!-- Sempre que o arquivo for atualizado, aumentar o número após o ?v= -->
 </head>
 <body>
 
@@ -32,70 +32,88 @@
       <div id="mensagemBox" class="mensagem"></div>
 
       <form id="formAgendamento">
-      <div class="campo">
-        <label for="nomeCliente">Seu Nome:</label>
-        <input type="text" id="nomeCliente" minlength="4" placeholder="Ex: Maria Silva" required>
-      </div>
-
-      <div class="campo">
-        <label for="telefoneCliente">WhatsApp (com DDD):</label>
-        <input type="tel" id="telefoneCliente" required placeholder="Ex: 44999998888">
-      </div>
-
-      <div class="campo">
-        <label for="servicoSelect">Serviço:</label>
-        <select id="servicoSelect" required>
-          <option value="">Carregando serviços...</option>
-        </select>
-      </div>
-
-      <div class="campo">
-        <label for="dataAgendamento">Escolha o Dia:</label>
-        <input type="date" id="dataAgendamento" required>
-        <small id="avisoDia" style="text-align: center; color: #666; display: block; margin-top: 4px;">Horário padrão: Terça a Sábado (sujeito a horários extras)</small>
-      </div>
-
-      <div class="campo">
-        <div id="gradeHorarios" class="grade-horarios">
-         <p style="text-align: center; color: #94a3b8; font-size: 0.9em; grid-column: 1 / -1;">Selecione uma data acima para ver os horários.
+        <div class="campo">
+          <label for="nomeCliente">Seu Nome:</label>
+          <input type="text" id="nomeCliente" minlength="4" placeholder="Ex: Maria Silva" required>
         </div>
-        <!-- Guarda o horário selecionado -->
-        <input type="hidden" id="horarioSelecionado" required>
-      </div>
+
+        <div class="campo">
+          <label for="telefoneCliente">WhatsApp (com DDD):</label>
+          <input type="tel" id="telefoneCliente" required placeholder="Ex: 44999998888">
+        </div>
+
+        <div class="campo">
+          <label>Escolha os Serviços <span style="font-size: 0.82em; color: #94a3b8; font-weight: normal;">(até 3 por sessão)</span>:</label>
+          <div id="listaServicosContainer" class="lista-servicos-grid">
+            <p style="text-align: center; color: #94a3b8; font-size: 0.9em;">Carregando serviços...</p>
+          </div>
+          
+          <!-- Resumo dinâmico dos serviços selecionados -->
+          <div id="resumoServicosBox" style="
+            display: none;
+            margin-top: 10px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            background: rgba(212, 175, 55, 0.08);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            font-size: 0.88rem;
+            color: #f8fafc;
+            justify-content: space-between;
+            align-items: center;
+          ">
+            <span id="resumoQtdTempo">0 serviços • 0 min</span>
+            <strong id="resumoValorTotal" style="color: #d4af37; font-size: 1rem;">R$ 0,00</strong>
+          </div>
+        </div>
+
+        <div class="campo">
+          <label for="dataAgendamento">Escolha o Dia:</label>
+          <input type="date" id="dataAgendamento" required>
+          <small id="avisoDia" style="text-align: center; color: #666; display: block; margin-top: 4px;">Horário padrão: Terça a Sábado (sujeito a horários extras)</small>
+        </div>
+
+        <div class="campo">
+          <div id="gradeHorarios" class="grade-horarios">
+            <p style="text-align: center; color: #94a3b8; font-size: 0.9em; grid-column: 1 / -1;">Selecione uma data acima para ver os horários.</p>
+          </div>
+          <!-- Guarda o horário selecionado -->
+          <input type="hidden" id="horarioSelecionado" required>
+        </div>
 
         <button type="submit" id="btnConfirmar">Confirmar Agendamento</button>
         <p style="text-align: center; font-size: 0.85em; color: #94a3b8; margin-top: 12px;">
-        Ao clicar em confirmar você será redirecionado(a) para o WhatsApp da profissional com uma mensagem automática, basta enviar a mensagem.</p>
-    </form>
+          Ao clicar em confirmar você será redirecionado(a) para o WhatsApp da profissional com uma mensagem automática, basta enviar a mensagem.
+        </p>
+      </form>
     </div>
   </div>
 
   <div id="modalConfirmacao" class="modal-overlay" style="display: none;">
     <div class="card modal-card">
-    <h2 style="font-size: 1.6rem; margin-bottom: 10px;">Confirmar Agendamento?</h2>
-    <p style="color: #cbd5e1; font-size: 0.92rem; text-align: center; margin-bottom: 18px;">
-      Verifique os dados abaixo antes de finalizar:
-    </p>
-    <div id="resumoModal" style="
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(212, 175, 55, 0.25);
-      border-radius: 10px;
-      padding: 14px;
-      margin-bottom: 20px;
-      font-size: 0.92rem;
-      line-height: 1.7;
-      color: #f8fafc;
-    "></div>
-    <div style="display: flex; gap: 12px;">
-      <button type="button" id="btnCancelarModal" class="btn-secundario-modal">Cancelar</button>
-      <button type="button" id="btnConfirmarModal" class="btn-confirmar" style="margin-top: 0;">
-        Confirmar
-      </button>
-    </div>
+      <h2 style="font-size: 1.6rem; margin-bottom: 10px;">Confirmar Agendamento?</h2>
+      <p style="color: #cbd5e1; font-size: 0.92rem; text-align: center; margin-bottom: 18px;">
+        Verifique os dados abaixo antes de finalizar:
+      </p>
+      <div id="resumoModal" style="
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(212, 175, 55, 0.25);
+        border-radius: 10px;
+        padding: 14px;
+        margin-bottom: 20px;
+        font-size: 0.92rem;
+        line-height: 1.7;
+        color: #f8fafc;
+      "></div>
+      <div style="display: flex; gap: 12px;">
+        <button type="button" id="btnCancelarModal" class="btn-secundario-modal">Cancelar</button>
+        <button type="button" id="btnConfirmarModal" class="btn-confirmar" style="margin-top: 0;">
+          Confirmar
+        </button>
+      </div>
     </div>
   </div>
 
-    <footer class="footer-estudio">
+  <footer class="footer-estudio">
     <p>&copy; 2026 <strong>Studio Natieli Novais</strong> — Todos os direitos reservados.</p>
     <p class="creditos-dev">
       Desenvolvido por 
@@ -105,6 +123,6 @@
     </p>
   </footer>
 
-  <script src="app.js?v=7"></script> <!-- Sempre que o arquivo for atualizado, aumentar o número após o ?v= -->
+  <script src="app.js?v=8"></script> <!-- Sempre que o arquivo for atualizado, aumentar o número após o ?v= -->
 </body>
 </html>

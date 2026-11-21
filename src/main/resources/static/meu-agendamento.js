@@ -1,8 +1,9 @@
-const API_URL = "https://sistema-agendamento-studio.onrender.com";
+const API_URL = "https://sistema-agendamento-studio.onrender.com/";
 const WHATSAPP_PROFISSIONAL = "5544998375875";
 
 const params = new URLSearchParams(window.location.search);
 const agendamentoId = params.get("id");
+const avisoWhatsApp = document.getElementById("avisoWhatsApp");
 
 const carregando = document.getElementById("carregando");
 const conteudoAgendamento = document.getElementById("conteudoAgendamento");
