@@ -1,4 +1,4 @@
-const API_URL = "https://sistema-agendamento-studio.onrender.com/";
+const API_URL = "https://sistema-agendamento-studio.onrender.com";
 const WHATSAPP_PROFISSIONAL = "5544998375875";
 
 const params = new URLSearchParams(window.location.search);

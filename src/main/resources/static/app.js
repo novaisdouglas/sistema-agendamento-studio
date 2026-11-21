@@ -1,4 +1,4 @@
-const API_URL = "https://sistema-agendamento-studio.onrender.com/";
+const API_URL = "https://sistema-agendamento-studio.onrender.com";
 const WHATSAPP_PROFISSIONAL = "5544998375875";
 
 const GRADE_EXPEDIENTE = ["14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00"];
