@@ -252,6 +252,7 @@ function formatarTituloDia(dataChave) {
     Object.keys(gruposPorData).forEach((dataChave) => {
       const listaDoDia = gruposPorData[dataChave];
       const tituloDia = formatarTituloDia(dataChave);
+      const totalClientesAtivos = listaDoDia.filter((ag) => ag.status !== "CANCELADO").length;
 
       const blocoDia = document.createElement("div");
       blocoDia.style.marginBottom = "30px";
@@ -319,7 +320,7 @@ function formatarTituloDia(dataChave) {
             ${tituloDia}
           </span>
           <span style="color: #cbd5e1; font-size: 0.82rem;">
-            ${listaDoDia.length} ${listaDoDia.length === 1 ? "cliente" : "clientes"}
+            ${totalClientesAtivos} ${totalClientesAtivos === 1 ? "cliente" : "clientes"}
           </span>
         </div>
 
