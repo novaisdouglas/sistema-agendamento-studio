@@ -384,6 +384,10 @@ btnConfirmarModal.addEventListener("click", async () => {
     const agendamentoCriado = await res.json();
     modalConfirmacao.style.display = "none";
 
+    if (typeof gtag === "function") {
+      gtag("event", "agendamento_concluido");
+    }
+
     exibirMensagem(`Agendamento de <strong>${nome}</strong> confirmado! Abrindo WhatsApp...`, "sucesso");
 
     const linkGerenciamento = `${window.location.origin}/meu-agendamento.html?id=${agendamentoCriado.id}`;
