@@ -266,8 +266,15 @@ function formatarTituloDia(dataChave) {
           ? `R$ ${Number(ag.precoServico).toFixed(2).replace(".", ",")}`
           : "";
 
+        const classeLinha =
+          ag.status === "CONCLUIDO"
+            ? "linha-concluida"
+            : ag.status === "CANCELADO"
+            ? "linha-cancelada"
+            : "";
+
         linhasTabela += `
-          <tr>
+          <tr class="${classeLinha}">
             <td><strong style="color: #94a3b8;">#${ag.id}</strong></td>
             <td style="white-space: nowrap;"><strong style="color: #fcd34d;">${horarioExibicao}</strong></td>
             <td><strong>${ag.nomeCliente}</strong></td>
