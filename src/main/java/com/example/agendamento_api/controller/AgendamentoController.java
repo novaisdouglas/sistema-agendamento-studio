@@ -85,9 +85,8 @@ public class AgendamentoController {
             LocalDateTime fimDia = data.atTime(23, 59, 59);
             lista = agendamentoRepository.findByDataHoraInicioBetweenAndStatusNot(inicioDia, fimDia, StatusAgendamento.CANCELADO);
         } else {
-            // Busca todos os agendamentos ativos a partir de hoje
             LocalDateTime inicioHoje = LocalDate.now().atTime(0, 0, 0);
-            lista = agendamentoRepository.findAll().stream().filter(a -> !a.getDataHoraInicio().isBefore(inicioHoje)).toList();
+            lista = agendamentoRepository.findAllAPartirDeHojeComServicos(inicioHoje);
         }
 
         List<AgendamentoResponseDTO> agendamentos = lista.stream()

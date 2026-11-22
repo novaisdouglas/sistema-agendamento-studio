@@ -25,10 +25,24 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
         @Param("statusCancelado") StatusAgendamento statusCancelado
     );
 
-    // Novo método: busca agendamentos ativos de um determinado dia
+    @Query("""
+        SELECT DISTINCT a FROM Agendamento a
+        LEFT JOIN FETCH a.servicos
+        WHERE a.dataHoraInicio BETWEEN :inicioDia AND :fimDia
+          AND a.status <> :statusCancelado
+        ORDER BY a.dataHoraInicio ASC
+    """)
     List<Agendamento> findByDataHoraInicioBetweenAndStatusNot(
-        LocalDateTime inicioDia, 
-        LocalDateTime fimDia, 
-        StatusAgendamento statusCancelado
+        @Param("inicioDia") LocalDateTime inicioDia,
+        @Param("fimDia") LocalDateTime fimDia,
+        @Param("statusCancelado") StatusAgendamento statusCancelado
     );
+
+    @Query("""
+        SELECT DISTINCT a FROM Agendamento a
+        LEFT JOIN FETCH a.servicos
+        WHERE a.dataHoraInicio >= :inicioHoje
+        ORDER BY a.dataHoraInicio ASC
+    """)
+    List<Agendamento> findAllAPartirDeHojeComServicos(@Param("inicioHoje") LocalDateTime inicioHoje);
 }
