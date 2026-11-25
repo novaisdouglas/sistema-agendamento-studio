@@ -282,6 +282,7 @@ async function renderizarGradeHorarios(dataString) {
       document.getElementById("dataAgendamento").dispatchEvent(new Event("change"));
     });
   }
+}
 
 // Elementos do Modal
 const modalConfirmacao = document.getElementById("modalConfirmacao");
@@ -452,4 +453,4 @@ dataAgendamento.addEventListener("change", () => {
 });
 
 btnConfirmar.disabled = true;
-carregarServicos()}
+carregarServicos();
