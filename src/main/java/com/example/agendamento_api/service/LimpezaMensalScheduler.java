@@ -26,7 +26,9 @@ public class LimpezaMensalScheduler {
     @Scheduled(cron = "0 0 3 1 * *", zone = "America/Sao_Paulo")
     @Transactional
     public void limparAgendamentosAntigos() {
-        LocalDateTime inicioMesAtual = LocalDate.now().withDayOfMonth(1).atStartOfDay();
+        LocalDateTime inicioMesAtual = LocalDate.now(java.time.ZoneId.of("America/Sao_Paulo"))
+        .withDayOfMonth(1)
+        .atStartOfDay();
 
         // Remove da tabela intermediária os vínculos de agendamentos de meses anteriores
         entityManager.createNativeQuery(

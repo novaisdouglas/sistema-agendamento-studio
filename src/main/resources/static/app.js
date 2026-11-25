@@ -260,9 +260,28 @@ async function renderizarGradeHorarios(dataString) {
     }
   } catch (e) {
     if (idRequisicao !== requisicaoGradeAtual) return;
-    gradeHorarios.innerHTML = '<p style="color: #dc2626; grid-column: 1/-1;">Erro ao consultar horários disponíveis.</p>';
+
+    const semInternet = !navigator.onLine;
+    const textoErro = semInternet
+      ? "Sem conexão com a internet. Verifique seu Wi-Fi ou dados móveis."
+      : "Erro de conexão ao buscar horários. Verifique sua internet e tente novamente.";
+
+    gradeHorarios.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align: center;">
+        <p style="color: #f87171; font-size: 0.9rem; margin-bottom: 10px;">
+          ${textoErro}
+        </p>
+        <button type="button" id="btnTentarHorarios"
+          style="padding: 8px 16px; border-radius: 6px; border: 1px solid #eab308; background: transparent; color: #eab308; font-size: 0.85rem; cursor: pointer;">
+          Tentar novamente
+        </button>
+      </div>
+    `;
+
+    document.getElementById("btnTentarHorarios").addEventListener("click", () => {
+      document.getElementById("dataAgendamento").dispatchEvent(new Event("change"));
+    });
   }
-}
 
 // Elementos do Modal
 const modalConfirmacao = document.getElementById("modalConfirmacao");
@@ -433,4 +452,4 @@ dataAgendamento.addEventListener("change", () => {
 });
 
 btnConfirmar.disabled = true;
-carregarServicos();
+carregarServicos()}
